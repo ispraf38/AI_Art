@@ -1,0 +1,163 @@
+import time
+from typing import List, Tuple, Dict
+from selenium import webdriver
+from bs4 import BeautifulSoup
+from datetime import datetime
+from loguru import logger
+
+ELEMENTS = {
+    'page_list': (
+        'ul',
+        {
+            'class': 'chr-page-pagination__list'
+        }
+    ),
+    'page_button': (
+        'li',
+        {}
+    ),
+    'page_text': (
+        'span',
+        {
+            'class': 'chr-button__text'
+        }
+    ),
+    'lot_box_container': (
+        'div',
+        {
+            'class': 'chr-search-lots-view__column-transition col-12 col-lm-8 col-lg-9 col-xl-9'
+        }
+    ),
+    'lot_box': (
+        'div',
+        {
+            'class': 'chr-search-lots-view__column-transition chr-search-lots-view__tile-section col-sm-6 col-md-4 '
+                     'chr-search-results tile-gutter col-lm-6 col-lg-4 col-xl-4'
+        }
+    ),
+    'lot_link': (
+        'a',
+        {
+            'class': 'chr-lot-tile__link'
+        }
+    )
+}
+
+CHECK = (
+    (
+        {
+            'key': 'page_list',
+            'find_all': False,
+        },
+        {
+            'key': 'page_button',
+            'find_all': True
+        },
+        {
+            'key': 'page_text',
+            'find_all': False,
+        }
+    ),
+    (
+        {
+            'key': 'lot_box_container',
+            'find_all': False,
+        },
+        {
+            'key': 'lot_box',
+            'find_all': True,
+        },
+        {
+            'key': 'lot_link',
+            'find_all': False,
+        }
+    )
+)
+
+
+def load_check(soup: BeautifulSoup) -> Tuple[Dict[str, bool], bool]:
+    # logger.debug('Checking load')
+    loaded = {}
+    loaded_all = True
+    for key, element in ELEMENTS.items():
+        is_loaded = soup.find(*element) is not None
+        loaded[key] = is_loaded
+        loaded_all = loaded_all and is_loaded
+
+    # logger.debug(loaded)
+    # logger.debug(loaded_all)
+    return loaded, loaded_all
+
+
+def get_soup_by_url_bs(url: str, driver: webdriver, max_time: float = 2) -> Tuple[bool, BeautifulSoup]:
+    logger.info(f'Processing url: {url}')
+    driver.get(url)
+    start_time = datetime.now()
+    loaded_all = False
+    loaded = {}
+    soup = None
+    while not loaded_all and (datetime.now() - start_time).total_seconds() < max_time:
+        soup = BeautifulSoup(driver.page_source)
+        loaded, loaded_all = load_check(soup)
+    if loaded_all:
+        logger.success(f'Successfully loaded page')
+    else:
+        logger.warning(f'Page not fully loaded')
+        for key, l in loaded.items():
+            if l:
+                logger.success(f'{key} was found')
+            else:
+                logger.error(f'{key} was not found')
+
+    return loaded_all, soup
+
+
+def get_num_pages_bs(soup: BeautifulSoup) -> int:
+    pages_num_widget = soup.find(*ELEMENTS['page_list'])
+    if pages_num_widget is not None:
+        buttons = pages_num_widget.find_all('li')
+        page_num = int(buttons[-1].find(*ELEMENTS['page_text']).text)
+    else:
+        page_num = -1
+
+    return page_num
+
+
+def get_links_bs(soup: BeautifulSoup) -> List[str]:
+    soup = soup.find(*ELEMENTS['lot_box_container'])
+    lots = soup.find_all(*ELEMENTS['lot_box'])
+
+    links = [lot.find(*ELEMENTS['lot_link'])['href'] for lot in lots]
+
+    return links
+
+
+def get_url_by_name(name: str, page: int = 1) -> str:
+    return f'https://www.christies.com/search?' \
+           f'entry={name.replace(" ", "%20")}&page={str(page)}&sortby=relevance&tab=sold_lots'
+
+
+def get_links_by_name(name: str, driver: webdriver) -> List[str]:
+    logger.info(f'Collecting links by name: {name}')
+
+    url = get_url_by_name(name)
+
+    loaded, soup = get_soup_by_url_bs(url, driver)
+    links = []
+    if loaded:
+        page_num = get_num_pages_bs(soup)
+        links = get_links_bs(soup)
+        for p in range(2, page_num + 1):
+            url = get_url_by_name(name, p)
+            loaded, soup = get_soup_by_url_bs(url, driver)
+            if loaded:
+                links.extend(get_links_bs(soup))
+    else:
+        logger.debug(f'Page loaded with errors. Skipping')
+    return links
+
+
+if __name__ == '__main__':
+    driver = webdriver.Chrome()
+    links = get_links_by_name('Edward Steichen', driver)
+    print(links)
