@@ -1,11 +1,11 @@
 import time
-from typing import List, Tuple, Dict
+from typing import List, Tuple, Dict, Any, Optional
 from selenium import webdriver
 from bs4 import BeautifulSoup
 from datetime import datetime
 from loguru import logger
 
-ELEMENTS = {
+PAGE_ELEMENTS = {
     'page_list': (
         'ul',
         {
@@ -22,6 +22,9 @@ ELEMENTS = {
             'class': 'chr-button__text'
         }
     ),
+}
+
+LOT_ELEMENTS = {
     'lot_box_container': (
         'div',
         {
@@ -43,43 +46,15 @@ ELEMENTS = {
     )
 }
 
-CHECK = (
-    (
-        {
-            'key': 'page_list',
-            'find_all': False,
-        },
-        {
-            'key': 'page_button',
-            'find_all': True
-        },
-        {
-            'key': 'page_text',
-            'find_all': False,
-        }
-    ),
-    (
-        {
-            'key': 'lot_box_container',
-            'find_all': False,
-        },
-        {
-            'key': 'lot_box',
-            'find_all': True,
-        },
-        {
-            'key': 'lot_link',
-            'find_all': False,
-        }
-    )
-)
 
-
-def load_check(soup: BeautifulSoup) -> Tuple[Dict[str, bool], bool]:
+def load_check(soup: BeautifulSoup, elements: Optional[Dict[str, Tuple[str, Dict[str, str]]]] = None)\
+        -> Tuple[Dict[str, bool], bool]:
     # logger.debug('Checking load')
+    if elements is None:
+        elements = PAGE_ELEMENTS | LOT_ELEMENTS
     loaded = {}
     loaded_all = True
-    for key, element in ELEMENTS.items():
+    for key, element in elements.items():
         is_loaded = soup.find(*element) is not None
         loaded[key] = is_loaded
         loaded_all = loaded_all and is_loaded
@@ -89,7 +64,12 @@ def load_check(soup: BeautifulSoup) -> Tuple[Dict[str, bool], bool]:
     return loaded, loaded_all
 
 
-def get_soup_by_url_bs(url: str, driver: webdriver, max_time: float = 2) -> Tuple[bool, BeautifulSoup]:
+def get_soup_by_url(
+        url: str,
+        driver: webdriver,
+        max_time: float = 2,
+        elements: Optional[Dict[str, Tuple[str, Dict[str, str]]]] = None
+) -> Tuple[bool, BeautifulSoup]:
     logger.info(f'Processing url: {url}')
     driver.get(url)
     start_time = datetime.now()
@@ -97,8 +77,8 @@ def get_soup_by_url_bs(url: str, driver: webdriver, max_time: float = 2) -> Tupl
     loaded = {}
     soup = None
     while not loaded_all and (datetime.now() - start_time).total_seconds() < max_time:
-        soup = BeautifulSoup(driver.page_source)
-        loaded, loaded_all = load_check(soup)
+        soup = BeautifulSoup(driver.page_source, 'html.parser')
+        loaded, loaded_all = load_check(soup, elements)
     if loaded_all:
         logger.success(f'Successfully loaded page')
     else:
@@ -113,10 +93,10 @@ def get_soup_by_url_bs(url: str, driver: webdriver, max_time: float = 2) -> Tupl
 
 
 def get_num_pages_bs(soup: BeautifulSoup) -> int:
-    pages_num_widget = soup.find(*ELEMENTS['page_list'])
+    pages_num_widget = soup.find(*PAGE_ELEMENTS['page_list'])
     if pages_num_widget is not None:
         buttons = pages_num_widget.find_all('li')
-        page_num = int(buttons[-1].find(*ELEMENTS['page_text']).text)
+        page_num = int(buttons[-1].find(*PAGE_ELEMENTS['page_text']).text)
     else:
         page_num = -1
 
@@ -124,10 +104,10 @@ def get_num_pages_bs(soup: BeautifulSoup) -> int:
 
 
 def get_links_bs(soup: BeautifulSoup) -> List[str]:
-    soup = soup.find(*ELEMENTS['lot_box_container'])
-    lots = soup.find_all(*ELEMENTS['lot_box'])
+    soup = soup.find(*LOT_ELEMENTS['lot_box_container'])
+    lots = soup.find_all(*LOT_ELEMENTS['lot_box'])
 
-    links = [lot.find(*ELEMENTS['lot_link'])['href'] for lot in lots]
+    links = [lot.find(*LOT_ELEMENTS['lot_link'])['href'] for lot in lots]
 
     return links
 
@@ -142,14 +122,14 @@ def get_links_by_name(name: str, driver: webdriver) -> List[str]:
 
     url = get_url_by_name(name)
 
-    loaded, soup = get_soup_by_url_bs(url, driver)
+    loaded, soup = get_soup_by_url(url, driver)
     links = []
     if loaded:
         page_num = get_num_pages_bs(soup)
         links = get_links_bs(soup)
         for p in range(2, page_num + 1):
             url = get_url_by_name(name, p)
-            loaded, soup = get_soup_by_url_bs(url, driver)
+            loaded, soup = get_soup_by_url(url, driver)
             if loaded:
                 links.extend(get_links_bs(soup))
     else:
