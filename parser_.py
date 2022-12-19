@@ -1,5 +1,5 @@
 import time
-from typing import List, Tuple, Dict, Any, Optional
+from typing import List, Tuple, Dict, Any, Optional, Union
 from selenium import webdriver
 from bs4 import BeautifulSoup
 from datetime import datetime
@@ -46,21 +46,53 @@ LOT_ELEMENTS = {
     )
 }
 
+RESULTS_ELEMENTS = {
+    'results_carousel': (
+        'div',
+        {
+            'class': 'chr-scrolling-carousel__content'
+        }
+    ),
+    'results_button': (
+        'button',
+        {
+            'title': 'Sold Lots'
+        }
+    ),
+    'results_num': (
+        'span',
+        {}
+    )
+}
 
-def load_check(soup: BeautifulSoup, elements: Optional[Dict[str, Tuple[str, Dict[str, str]]]] = None)\
-        -> Tuple[Dict[str, bool], bool]:
+
+def load_check(soup: BeautifulSoup, elements: Optional[Dict[str, Dict[str, Tuple[str, Dict[str, str]]]]] = None)\
+        -> Tuple[Dict[str, Dict[str, Union[bool, Dict[str, bool]]]], bool]:
     # logger.debug('Checking load')
     if elements is None:
-        elements = PAGE_ELEMENTS | LOT_ELEMENTS
+        elements = {
+            'page': PAGE_ELEMENTS,
+            'lot': LOT_ELEMENTS,
+            'results': RESULTS_ELEMENTS,
+        }
     loaded = {}
     loaded_all = True
     for key, element in elements.items():
-        is_loaded = soup.find(*element) is not None
-        loaded[key] = is_loaded
-        loaded_all = loaded_all and is_loaded
+        # logger.debug(key)
+        # logger.debug(element)
+        loaded_ = {}
+        loaded_all_ = True
+        for key_, element_ in element.items():
+            is_loaded = soup.find(*element_) is not None
+            loaded_[key_] = is_loaded
+            loaded_all = loaded_all and is_loaded
+            loaded_all_ = loaded_all_ and is_loaded
+        loaded[key] = {
+            'loaded': loaded_all_,
+            'details': loaded_
+        }
 
     # logger.debug(loaded)
-    # logger.debug(loaded_all)
     return loaded, loaded_all
 
 
@@ -68,8 +100,8 @@ def get_soup_by_url(
         url: str,
         driver: webdriver,
         max_time: float = 2,
-        elements: Optional[Dict[str, Tuple[str, Dict[str, str]]]] = None
-) -> Tuple[bool, BeautifulSoup]:
+        elements: Optional[Dict[str, Dict[str, Tuple[str, Dict[str, str]]]]] = None
+) -> Tuple[bool, Dict[str, Dict[str, Union[bool, Dict[str, bool]]]], BeautifulSoup]:
     logger.info(f'Processing url: {url}')
     driver.get(url)
     start_time = datetime.now()
@@ -84,12 +116,17 @@ def get_soup_by_url(
     else:
         logger.warning(f'Page not fully loaded')
         for key, l in loaded.items():
-            if l:
-                logger.success(f'{key} was found')
+            if l['loaded']:
+                logger.success(f'\t{key} is fully loaded')
             else:
-                logger.error(f'{key} was not found')
+                for k, l_ in l['details'].items():
+                    if l_:
+                        logger.success(f'\t\t{k} was found')
+                    else:
+                        logger.error(f'\t\t{k} was not found')
 
-    return loaded_all, soup
+
+    return loaded_all, loaded, soup
 
 
 def get_num_pages_bs(soup: BeautifulSoup) -> int:
@@ -98,16 +135,32 @@ def get_num_pages_bs(soup: BeautifulSoup) -> int:
         buttons = pages_num_widget.find_all('li')
         page_num = int(buttons[-1].find(*PAGE_ELEMENTS['page_text']).text)
     else:
-        page_num = -1
+        page_num = 1
 
     return page_num
+
+
+def get_num_results_bs(soup: BeautifulSoup) -> int:
+    carousel = soup.find(*RESULTS_ELEMENTS['results_carousel'])
+    button = carousel.find(*RESULTS_ELEMENTS['results_button'])
+    results_text = button.find_all(*RESULTS_ELEMENTS['results_num'])[-1].text
+
+    results = ''.join(results_text[1:-1].split('+')[0].split(','))
+    logger.info(f'Found {results_text}={results} results')
+
+    return int(results)
 
 
 def get_links_bs(soup: BeautifulSoup) -> List[str]:
     soup = soup.find(*LOT_ELEMENTS['lot_box_container'])
     lots = soup.find_all(*LOT_ELEMENTS['lot_box'])
+    logger.info(f'Collecting links to lots')
 
     links = [lot.find(*LOT_ELEMENTS['lot_link'])['href'] for lot in lots]
+    if links:
+        logger.success(f'Collected {str(len(links))} links')
+    else:
+        logger.warning(f'No links were found')
 
     return links
 
