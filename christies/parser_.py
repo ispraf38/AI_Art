@@ -166,6 +166,7 @@ def get_links_bs(soup: BeautifulSoup) -> List[str]:
 
 
 def get_url_by_name(name: str, page: int = 1) -> str:
+    logger.debug(f'Getting page {page} for {name}')
     return f'https://www.christies.com/search?' \
            f'entry={name.replace(" ", "%20")}&page={str(page)}&sortby=relevance&tab=sold_lots'
 

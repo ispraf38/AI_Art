@@ -22,7 +22,7 @@ def get_data(file_name: str = 'data.csv', file_kwargs: Optional[Dict[str, Any]] 
 
     if os.path.exists(file_name):
         logger.info(f'File {file_name} was found')
-        data = pd.read_csv(file_name, **file_kwargs)
+        data = pd.read_csv(file_name, index_col=0, **file_kwargs)
     else:
         logger.info(f'File {file_name} was not found')
         data = get_names()
@@ -44,14 +44,7 @@ def get_names(file_name: str = 'prehandled_data.csv', file_kwargs: Optional[Dict
     data['split_name'] = data['name'].str.split('--')
     data = data.explode('split_name').reset_index(drop=True)
     data['chr_num_pages'] = -1
-    data['crh_page'] = None
     data['chr_links'] = None
-    data['handled'] = False
-    # names = set(data['name'].to_list())
-    # handled_names = []
-    # for n in names:
-    #     if type(n) == str:
-    #         handled_names.extend(n.split('--'))
     return data
 
 
