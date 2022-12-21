@@ -99,7 +99,7 @@ def load_check(soup: BeautifulSoup, elements: Optional[Dict[str, Dict[str, Tuple
 def get_soup_by_url(
         url: str,
         driver: webdriver,
-        max_time: float = 2,
+        max_time: float = 5,
         elements: Optional[Dict[str, Dict[str, Tuple[str, Dict[str, str]]]]] = None
 ) -> Tuple[bool, Dict[str, Dict[str, Union[bool, Dict[str, bool]]]], BeautifulSoup]:
     logger.info(f'Processing url: {url}')
