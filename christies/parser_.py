@@ -171,27 +171,5 @@ def get_url_by_name(name: str, page: int = 1) -> str:
            f'entry={name.replace(" ", "%20")}&page={str(page)}&sortby=relevance&tab=sold_lots'
 
 
-def get_links_by_name(name: str, driver: webdriver) -> List[str]:
-    logger.info(f'Collecting links by name: {name}')
-
-    url = get_url_by_name(name)
-
-    loaded, soup = get_soup_by_url(url, driver)
-    links = []
-    if loaded:
-        page_num = get_num_pages_bs(soup)
-        links = get_links_bs(soup)
-        for p in range(2, page_num + 1):
-            url = get_url_by_name(name, p)
-            loaded, soup = get_soup_by_url(url, driver)
-            if loaded:
-                links.extend(get_links_bs(soup))
-    else:
-        logger.debug(f'Page loaded with errors. Skipping')
-    return links
-
-
 if __name__ == '__main__':
     driver = webdriver.Chrome()
-    links = get_links_by_name('Edward Steichen', driver)
-    print(links)

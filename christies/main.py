@@ -8,7 +8,7 @@ from selenium import webdriver
 
 MAX_LOTS_ON_PAGE = 20
 
-FILE_NAME = 'data.csv'
+FILE_NAME = 'data_christies.csv'
 FILE_KWARGS = {
     'sep': ';',
 }

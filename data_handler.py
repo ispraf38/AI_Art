@@ -23,8 +23,8 @@ def get_data(file_name: str = 'data.csv', file_kwargs: Optional[Dict[str, Any]] 
     if os.path.exists(file_name):
         logger.info(f'File {file_name} was found')
         data = pd.read_csv(file_name, index_col=0, **file_kwargs)
-        data.loc[data['chr_links'] == 'No', 'chr_links'] = f"['No']"
-        data['chr_links'] = data['chr_links'].str.strip("[]'").str.split("', '")
+        data.loc[data['links'] == 'No', 'links'] = f"['No']"
+        data['links'] = data['links'].str.strip("[]'").str.split("', '")
         # data['chr_links'] = data['chr_links'].apply(lambda x: x[0] if len(x) == 1 else x)
     else:
         logger.info(f'File {file_name} was not found')
@@ -46,8 +46,8 @@ def get_names(file_name: str = 'prehandled_data.csv', file_kwargs: Optional[Dict
     data = data.groupby(by=['name'], dropna=True).first().reset_index()
     data['split_name'] = data['name'].str.split('--')
     data = data.explode('split_name').reset_index(drop=True)
-    data['chr_num_pages'] = -1
-    data['chr_links'] = ['No']
+    data['num_pages'] = -1
+    data['links'] = [['No'] for _ in range(len(data))]
     return data
 
 
