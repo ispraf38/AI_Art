@@ -58,14 +58,14 @@ def not_for_students_(parser: Parser, autosave: int = 100):
                       axis=1).reset_index(drop=True)
 
     data = data.explode('page')
-    data.to_csv(f'test_{FILE_NAME}_{parser.auction}.csv', **FILE_KWARGS)
+    data.to_csv(f'{FILE_NAME}_{parser.auction}.csv', **FILE_KWARGS)
     for n, (i, row) in enumerate(data.iterrows()):
         if row['links'] == ['No'] and not np.isnan(row['page']):
             url = parser.get_url_by_name(row['split_name'], page=int(row['page']))
             logger.debug(f'Collecting lots for url: {url}')
             loaded_all, loaded = parser.load_page(url, elements=['lot_elements'])
 
-            if loaded_all:
+            if loaded['lot_elements']['details']['lot_box'] and loaded['lot_elements']['details']['lot_link']:
                 row['links'].remove('No')
                 row['links'].extend(parser.get_links())
 
@@ -84,7 +84,7 @@ if __name__ == '__main__':
     parser = Parser()
 
     parser.set_auction('phillips')
-    run(parser)
+    # run(parser)
     not_for_students_(parser, 10)
 
     parser.set_auction('christies')
