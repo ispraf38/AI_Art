@@ -17,47 +17,11 @@ FILE_KWARGS = {
     'sep': ';',
 }
 
-LOT_LINK_CSS = '.pending .search-result-text'
-
-
-def scroll_page(driver: webdriver, old_coordinates: Optional[Dict[str, int]] = None, offset: int = 0)\
-        -> Tuple[Dict[str, int], int]:
-    if old_coordinates is None:
-        old_coordinates = {'x': 0, 'y': 0}
-    element = driver.find_element(By.CSS_SELECTOR, LOT_LINK_CSS)
-    coordinates = element.location
-    '''print(coordinates)
-    print(old_coordinates)
-    print(offset)'''
-    if coordinates == old_coordinates:
-        offset += 100
-    else:
-        offset = 0
-
-    driver.execute_script('window.scrollTo({}, {});'.format(coordinates['x'], coordinates['y'] - 500))
-    return coordinates, offset
-
-
-def get_soup_after_scroll(driver: webdriver) -> BeautifulSoup:
-    logger.info('Scrolling page')
-    coordinates, offset = None, 0
-    while True:
-        try:
-            coordinates, offset = scroll_page(driver, coordinates, offset)
-        except NoSuchElementException:
-            logger.info('Found no pending links. ')
-            soup = BeautifulSoup(driver.page_source, 'html.parser')
-            break
-
-    return soup
-
 
 def get_num_pages_and_links(row: pd.Series, driver: webdriver) -> pd.Series:
     url = get_url_by_name(row['split_name'])
     loaded_all, loaded, soup = get_soup_by_url(url, driver, elements={'results': RESULTS_ELEMENTS,
                                                                       'lots': LOT_ELEMENTS})
-
-    soup = get_soup_after_scroll(driver)
 
     if loaded['results']['loaded']:
         # num_pages = get_num_pages_bs(soup)
@@ -73,8 +37,6 @@ def get_num_pages_and_links(row: pd.Series, driver: webdriver) -> pd.Series:
 def get_num_pages(row: pd.Series, driver: webdriver) -> pd.Series:
     url = get_url_by_name(row['split_name'])
     loaded_all, loaded, soup = get_soup_by_url(url, driver, elements={'results': RESULTS_ELEMENTS})
-
-    soup = get_soup_after_scroll(driver)
 
     if loaded['results']['loaded']:
         num_results = get_num_results_bs(soup)
@@ -104,11 +66,13 @@ def not_for_students_(autosave: int = 100):
                       axis=1).reset_index(drop=True)
 
     data = data.explode('page')
+    data.to_csv(f'test_{FILE_NAME}', **FILE_KWARGS)
     for n, (i, row) in enumerate(data.iterrows()):
         if row['links'] == ['No'] and not np.isnan(row['page']):
             url = get_url_by_name(row['split_name'], page=int(row['page']))
             logger.debug(f'Collecting lots for url: {url}')
             loaded_all, loaded, soup = get_soup_by_url(url, driver, elements={'lots': LOT_ELEMENTS})
+
             if loaded_all:
                 row['links'].remove('No')
                 row['links'].extend(get_links_bs(soup))
@@ -126,5 +90,5 @@ def not_for_students_(autosave: int = 100):
 
 
 if __name__ == '__main__':
-    run()
-    not_for_students_(autosave=100)
+    # run()
+    not_for_students_(autosave=10)
