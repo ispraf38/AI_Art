@@ -110,6 +110,70 @@
                 "span",
                 {}
             ]
+        },
+        "name_price_elements": {
+            "name_price_row": [
+                "div",
+                {
+                    "class": "chr-lot-header--full chr-theme--living-color"
+                }
+            ],
+            "name_price_image": [
+                "img",
+                {
+                    "class": "chr-img lazyloaded"
+                }
+            ],
+            "name_price_header": [
+                "div",
+                {
+                    "class": "chr-lot-header__information"
+                }
+            ],
+            "name_price_artist": [
+                "span",
+                {
+                    "class": "chr-lot-header__artist-name"
+                }
+            ],
+            "name_price_title": [
+                "h1",
+                {
+                    "class": "chr-lot-header__title"
+                }
+            ],
+            "name_price_realised": [
+                "span",
+                {
+                    "class": "chr-lot-header__value-field"
+                }
+            ],
+            "name_price_estimate": [
+                "span",
+                {
+                    "class": "chr-body-medium"
+                }
+            ]
+        },
+        "description_elements": {
+            "description_row": [
+                "div",
+                {
+                    "class": "chr-lot-detail__main"
+                }
+            ],
+            "description_accordion": [
+                "div",
+                {
+                    "class": "chr-accordion-item chr-accordion-item--expanded"
+                }
+            ],
+            "description_text": [
+                "span",
+                {
+                    "class": "chr-lot-section__accordion--text"
+                }
+            ]
         }
     }
 }

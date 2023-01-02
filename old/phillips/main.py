@@ -1,14 +1,10 @@
 import pandas as pd
 import numpy as np
 from loguru import logger
-from data_handler import get_data, get_names
-from phillips.parser_ import get_url_by_name, get_soup_by_url, get_num_results_bs, get_links_bs
-from phillips.parser_ import LOT_ELEMENTS, RESULTS_ELEMENTS
+from FirstStage.data_handler import get_data, get_names
+from old.phillips.parser_ import get_url_by_name, get_soup_by_url, get_num_results_bs, get_links_bs
+from old.phillips.parser_ import LOT_ELEMENTS, RESULTS_ELEMENTS
 from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.common.exceptions import NoSuchElementException
-from typing import Dict, Optional, Tuple
-from bs4 import BeautifulSoup
 
 MAX_LOTS_ON_PAGE = 120
 

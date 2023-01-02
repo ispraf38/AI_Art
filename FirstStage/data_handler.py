@@ -33,7 +33,10 @@ def get_data(file_name: str = 'data.csv', file_kwargs: Optional[Dict[str, Any]] 
     return data
 
 
-def get_names(file_name: str = 'prehandled_data.csv', file_kwargs: Optional[Dict[str, Any]] = None) -> pd.DataFrame:
+def get_names(
+        file_name: str = '..\\Data\\prehandled_data.csv',
+        file_kwargs: Optional[Dict[str, Any]] = None
+) -> pd.DataFrame:
     logger.info(f'Getting names from {file_name}')
     if file_kwargs is None:
         file_kwargs = {

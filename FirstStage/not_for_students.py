@@ -1,45 +1,23 @@
 import pandas as pd
-import numpy as np
 from loguru import logger
-from data_handler import get_data, get_names
-from parser_ import Parser
-from selenium import webdriver
+import numpy as np
+from typing import Union
+
+from utils.parser_ import ChristiesParser, PhillipsParser
+from FirstStage.data_handler import get_data
 
 MAX_LOTS_ON_PAGE = {
     'christies': 20,
     'phillips': 120,
 }
 
-FILE_NAME = 'data'
+FILE_NAME = '..\\Data\\data'
 FILE_KWARGS = {
     'sep': ';',
 }
 
 
-def get_num_pages_and_links(row: pd.Series, parser: Parser) -> pd.Series:
-    url = parser.get_url_by_name(row['split_name'])
-    loaded_all, loaded = parser.load_page(url, elements=['results_elements', 'lot_elements'])
-    if loaded['results_elements']['loaded']:
-        num_results = parser.get_num_results()
-        num_pages = (num_results - 1) // MAX_LOTS_ON_PAGE[parser.auction] + 1
-        row['num_pages'] = num_pages
-    if loaded['lot_elements']['loaded']:
-        row['links'] = parser.get_links()
-
-    return row
-
-
-def run(parser: Parser):
-    data = get_names()
-    data = data.apply(lambda x: get_num_pages_and_links(x, parser) if x['num_pages'] == -1 else x,
-                      axis=1).reset_index(drop=True)
-
-    data = data.explode('links')
-
-    data.to_csv(f'students_data_{parser.auction}.csv')
-
-
-def get_num_pages(row: pd.Series, parser: Parser) -> pd.Series:
+def get_num_pages(row: pd.Series, parser: Union[ChristiesParser, PhillipsParser]) -> pd.Series:
     url = parser.get_url_by_name(row['split_name'])
     loaded_all, loaded = parser.load_page(url, elements=['results_elements'])
 
@@ -52,7 +30,7 @@ def get_num_pages(row: pd.Series, parser: Parser) -> pd.Series:
     return row
 
 
-def not_for_students_(parser: Parser, autosave: int = 100):
+def run(parser: Union[ChristiesParser, PhillipsParser], autosave: int = 100):
     data = get_data(f'{FILE_NAME}_{parser.auction}.csv', FILE_KWARGS)
     data = data.apply(lambda x: get_num_pages(x, parser) if x['num_pages'] == -1 else x,
                       axis=1).reset_index(drop=True)
@@ -64,6 +42,9 @@ def not_for_students_(parser: Parser, autosave: int = 100):
             url = parser.get_url_by_name(row['split_name'], page=int(row['page']))
             logger.debug(f'Collecting lots for url: {url}')
             loaded_all, loaded = parser.load_page(url, elements=['lot_elements'])
+
+            with open('debug.html', 'w', encoding='utf-8') as f:
+                f.write(parser.driver.page_source)
 
             if loaded['lot_elements']['details']['lot_box'] and loaded['lot_elements']['details']['lot_link']:
                 row['links'].remove('No')
@@ -77,18 +58,14 @@ def not_for_students_(parser: Parser, autosave: int = 100):
 
     data = data.explode(column=['links']).reset_index(drop=True)
 
-    data.to_csv(f'{FILE_NAME}_{parser.auction}.csv', **FILE_KWARGS)
+    data.to_csv(f'{FILE_NAME}_{parser.auction}.csv')
 
 
 if __name__ == '__main__':
-    parser = Parser()
-
-    parser.set_auction('phillips')
-    # run(parser)
-    not_for_students_(parser, 10)
-
-    parser.set_auction('christies')
+    parser = ChristiesParser()
     run(parser)
-    not_for_students_(parser)
+    parser.driver.close()
 
+    parser = PhillipsParser()
+    run(parser)
     parser.driver.close()

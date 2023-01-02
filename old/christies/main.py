@@ -1,9 +1,9 @@
 import pandas as pd
 import numpy as np
 from loguru import logger
-from data_handler import get_data, get_names
-from christies.parser_ import get_url_by_name, get_soup_by_url, get_num_results_bs, get_links_bs
-from christies.parser_ import LOT_ELEMENTS, RESULTS_ELEMENTS
+from FirstStage.data_handler import get_data, get_names
+from old.christies.parser_ import get_url_by_name, get_soup_by_url, get_num_results_bs, get_links_bs
+from old.christies.parser_ import LOT_ELEMENTS, RESULTS_ELEMENTS
 from selenium import webdriver
 
 MAX_LOTS_ON_PAGE = 20
