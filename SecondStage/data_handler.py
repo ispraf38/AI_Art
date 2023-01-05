@@ -11,7 +11,7 @@ def get_data(file_name: str,
     if file_kwargs is None:
         file_kwargs = {}
 
-    names = ['image', 'artist', 'title', 'realised', 'estimate', 'description_text']
+    names = ['image', 'artist', 'title', 'realised', 'estimate', 'date', 'auction_link', 'detail_header', 'detail_text']
 
     if tmp_name is not None and os.path.exists(tmp_name):
         logger.info(f'File {tmp_name} was found')

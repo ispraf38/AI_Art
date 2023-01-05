@@ -183,6 +183,11 @@ class AutoParser(Parser):
         super(AutoParser, self).__init__(elements_path=elements_path)
         self.set_auction(auction)
 
+    def set_driver(self):
+        caps = DesiredCapabilities().CHROME
+        caps['pageLoadStrategy'] = 'eager'
+        self.driver = webdriver.Chrome(desired_capabilities=caps)
+
     def log_details(self, details: Dict[str, Any], level: int = 0):
         for key, value in details.items():
             if value['loaded_all']:
