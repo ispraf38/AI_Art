@@ -5,8 +5,9 @@ from loguru import logger
 import os
 
 
-def get_data(file_name: str, file_kwargs: Optional[Dict[str, Any]] = None, tmp_name: Optional[str] = None)\
-        -> pd.DataFrame:
+def get_data(file_name: str,
+             file_kwargs: Optional[Dict[str, Any]] = None,
+             tmp_name: Optional[str] = None) -> pd.DataFrame:
     if file_kwargs is None:
         file_kwargs = {}
 
@@ -24,7 +25,7 @@ def get_data(file_name: str, file_kwargs: Optional[Dict[str, Any]] = None, tmp_n
         for name in names:
             data[name] = "~"
     else:
-        logger.info(f'File {file_name} was not found')
+        logger.error(f'File {file_name} was not found')
         data = pd.DataFrame()
         return data
 
@@ -35,6 +36,6 @@ def get_data(file_name: str, file_kwargs: Optional[Dict[str, Any]] = None, tmp_n
 
 
 if __name__ == '__main__':
-    names = get_data()
+    names = get_data('test.csv')
     print(names)
     names.to_csv('test.csv', sep=';')

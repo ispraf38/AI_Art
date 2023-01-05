@@ -347,6 +347,104 @@
             "find_all": false,
             "element_num": null,
             "children": {}
+        },
+        "name_price": {
+            "attrs": [
+                    "div",
+                    {
+                        "class": "lot-page__lot"
+                    }
+                ],
+            "desired_attr": null,
+            "find_all": false,
+            "element_num": null,
+            "children": {
+                "maker": {
+                    "attrs": [
+                        "div",
+                        {
+                            "class": "lot-page__lot__maker"
+                        }
+                    ],
+                    "desired_attr": null,
+                    "find_all": false,
+                    "element_num": null,
+                    "children": {
+                        "artist": {
+                            "attrs": [
+                                "h1",
+                                {
+                                    "class": "lot-page__lot__maker__name"
+                                }
+                            ],
+                            "desired_attr": "text",
+                            "find_all": false,
+                            "element_num": null,
+                            "children": {}
+                        }
+                    }
+                },
+                "title": {
+                    "attrs": [
+                        "h1",
+                        {
+                            "class": "lot-page__lot__title"
+                        }
+                    ],
+                    "desired_attr": "text",
+                    "find_all": false,
+                    "element_num": null,
+                    "children": {}
+                },
+                "description_text": {
+                    "attrs": [
+                        "p",
+                        {
+                            "class": "lot-page__lot__additional-info"
+                        }
+                    ],
+                    "desired_attr": "text",
+                    "find_all": false,
+                    "element_num": null,
+                    "children": {}
+                },
+                "estimate": {
+                    "attrs": [
+                        "p",
+                        {
+                            "class": "lot-page__lot__estimate"
+                        }
+                    ],
+                    "desired_attr": "text",
+                    "find_all": false,
+                    "element_num": null,
+                    "children": {}
+                },
+                "realised": {
+                    "attrs": [
+                        "p",
+                        {
+                            "class": "lot-page__lot__sold"
+                        }
+                    ],
+                    "desired_attr": "text",
+                    "find_all": false,
+                    "element_num": null,
+                    "children": {}
+                }
+            }
+        },
+        "image": {
+            "attrs": [
+                "img",
+                {
+                    "class": "phillips-image__image"
+                }
+            ],
+            "desired_attr": "src",
+            "find_all": false,
+            "element_num": null,
+            "children": {}
         }
     }
 }

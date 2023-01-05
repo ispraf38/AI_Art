@@ -18,11 +18,17 @@ FILE_KWARGS = {
 
 def get_details(row: pd.Series, parser: AutoParser) -> pd.Series:
     url = row['links']
-    loaded_all, loaded = parser.load_page(url, elements=['name_price', 'description'])
+    elements = ['name_price']
+    if parser.auction == 'christies':
+        elements.append('description')
+    if parser.auction == 'phillips':
+        elements.append('image')
+    loaded_all, loaded = parser.load_page(url, elements=elements)
     if loaded_all:
-        description = parser.parse_element('description')
-        name_price = parser.parse_element('name_price')
-        for key, value in (description | name_price).items():
+        results = {}
+        for element in elements:
+            results.update(parser.parse_element(element))
+        for key, value in results.items():
             if 'sep' in FILE_KWARGS:
                 if FILE_KWARGS['sep'] in value[0]:
                     logger.error(f'Separator ({FILE_KWARGS["sep"]}) was found in value:\n {value[0]}')
@@ -38,11 +44,12 @@ def run(parser: AutoParser):
 
     data = data.apply(lambda x: get_details(x, parser), axis=1).reset_index(drop=True)
 
-    data.to_csv(f'{FILE_NAME}_{parser.auction}_students_2.csv')
+    data.to_csv(f'{FILE_NAME}_{parser.auction}_students_2.csv', sep=FILE_KWARGS['sep'])
 
 
 if __name__ == '__main__':
-    parser = AutoParser('christies')
+    # parser = AutoParser('christies')
+    parser = AutoParser('phillips')
     run(parser)
     parser.driver.close()
 

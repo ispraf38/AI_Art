@@ -10,7 +10,8 @@ import json
 
 class Parser:
     def __init__(self, elements_path: Optional[str] = None):
-        self.driver = webdriver.Chrome()
+        self.driver = None
+        self.set_driver()
         logger.info('Loading elements')
         if elements_path is None:
             elements_path = '../elements.json'
@@ -20,6 +21,9 @@ class Parser:
         self.elements = {}
         self.auction = None
         self.soup = None
+
+    def set_driver(self):
+        self.driver = webdriver.Chrome()
 
     def set_auction(self, auction):
         assert auction in self.ELEMENTS.keys()
@@ -78,110 +82,10 @@ class Parser:
         return loaded_all, loaded
 
 
-class AutoParser(Parser):
-    def __init__(self, auction: str, elements_path: str = '../elements_auto.json'):
-        super(AutoParser, self).__init__(elements_path=elements_path)
-        self.set_auction(auction)
-
-    def log_details(self, details: Dict[str, Any], level: int = 0):
-        for key, value in details.items():
-            if value['loaded_all']:
-                logger.success('\t' * level + f'{key} is fully loaded')
-            else:
-                if value['loaded']:
-                    logger.warning('\t' * level + f'{key} is not fully loaded')
-                    self.log_details(value['details'], level + 1)
-                else:
-                    logger.error('\t' * level + f'{key} is not loaded')
-
-    def load_page(self, url: str, max_time: float = 5, elements: Optional[List[str]] = None) -> Any:
-        logger.info(f'Processing url: {url}')
-        self.driver.get(url)
-        start_time = datetime.now()
-        loaded_all = False
-        details = {}
-        while not loaded_all and (datetime.now() - start_time).total_seconds() < max_time:
-            self.get_soup()
-            loaded_all, details = self.soup_check(elements)
-
-        with open('test.html', 'w', encoding='utf-8') as f:
-            f.write(self.driver.page_source)
-        if loaded_all:
-            logger.success('Successfully loaded page')
-        else:
-            self.log_details(details)
-
-        return loaded_all, details
-
-    def soup_check(self, elements: Optional[List[str]] = None) -> Any:
-        if elements is None:
-            elements = {}
-        else:
-            assert set(elements).issubset(set(self.elements.keys()))
-            elements = {key: self.elements[key] for key in elements}
-
-        details = {}
-        loaded_all = True
-
-        for key, element in elements.items():
-            loaded, loaded_all_, details_ = self.element_check(self.soup, element)
-            loaded_all = loaded_all and loaded_all_
-            details[key] = {
-                'loaded': loaded,
-                'loaded_all': loaded_all_,
-                'details': details_,
-            }
-
-        return loaded_all, details
-
-    def element_check(self, soup, element):
-        soup_ = soup.find(*element['attrs'])
-        loaded = soup_ is not None
-        loaded_all = loaded
-        details = {}
-        if loaded:
-            for element_name, element_ in element['children'].items():
-                loaded_, loaded_all_, details_ = self.element_check(soup_, element_)
-                details[element_name] = {
-                    'loaded': loaded_,
-                    'loaded_all': loaded_all_,
-                    'details': details_,
-                }
-                loaded_all = loaded_all and loaded_all_
-
-        return loaded, loaded_all, details
-
-    def parse_element_(self, name: str, element: Dict[str, Any], soups: List[BeautifulSoup]) -> Dict[str, Any]:
-        results = {}
-        soups_ = []
-        for soup in soups:
-            if element['find_all']:
-                if element['element_num'] is None:
-                    soups_.extend(soup.find_all(*element['attrs']))
-                else:
-                    soups_.append(soup.find_all(*element['attrs'])[element['element_num']])
-            else:
-                soups_.append(soup.find(*element['attrs']))
-        if element['children']:
-            for name_, element_ in element['children'].items():
-                results.update(self.parse_element_(name_, element_, soups_))
-        if element['desired_attr'] is not None:
-            if element['desired_attr'] == 'text':
-                results[name] = [soup.text for soup in soups_]
-            else:
-                results[name] = [soup[element['desired_attr']] for soup in soups_]
-
-        return results
-
-    def parse_element(self, name: str) -> Dict[str, Any]:
-        return self.parse_element_(name, self.elements[name], [self.soup])
-
-
 class ChristiesParser(Parser):
     def __init__(self, *args, **kwargs):
         super(ChristiesParser, self).__init__(*args, **kwargs)
-        self.auction = 'christies'
-        self.elements = self.ELEMENTS[self.auction]
+        self.set_auction('christies')
 
     def get_url_by_name(self, name: str, page: int = 1) -> str:
         return f'https://www.christies.com/search?' \
@@ -223,46 +127,16 @@ class ChristiesParser(Parser):
 
         return links
 
-    def get_name_price(self) -> Dict[str, str]:
-        elements = self.elements['name_price_elements']
-        row = self.soup.find(*elements['name_price_row'])
-        image_link = row.find(*elements['name_price_image'])
-        logger.debug(image_link)
-        logger.debug(type(image_link))
-        logger.debug(image_link['src'])
-
-
-        header = row.find(*elements['name_price_header'])
-        artist = header.find(*elements['name_price_artist']).text
-        title = header.find(*elements['name_price_title']).text
-        realised = header.find(*elements['name_price_realised']).text
-        estimate = header.find(*elements['name_price_estimate']).text
-
-        return {
-            'image_link': image_link['src'],
-            'artist': artist,
-            'title': title,
-            'realised': realised,
-            'estimate': estimate
-        }
-
-    def get_description(self) -> str:
-        elements = self.elements['description_elements']
-        row = self.soup.find(*elements['description_row'])
-        accordion = row.find(*elements['description_accordion'])
-        text = accordion.find(*elements['description_text']).text
-
-        return text
-
 
 class PhillipsParser(Parser):
     def __init__(self, *args, **kwargs):
         super(PhillipsParser, self).__init__(*args, **kwargs)
+        self.set_auction('phillips')
+
+    def set_driver(self):
         caps = DesiredCapabilities().CHROME
         caps['pageLoadStrategy'] = 'eager'
         self.driver = webdriver.Chrome(desired_capabilities=caps)
-        self.auction = 'phillips'
-        self.elements = self.ELEMENTS[self.auction]
 
     def get_url_by_name(self, name: str, page: int = 1) -> str:
         return f'https://www.phillips.com/search/{str(page)}?search={name.replace(" ", "+")}'
@@ -303,5 +177,102 @@ class PhillipsParser(Parser):
 
         return links
 
-    def get_name_price(self) -> List[str]:
-        pass
+
+class AutoParser(Parser):
+    def __init__(self, auction: str, elements_path: str = '../elements_auto.json'):
+        super(AutoParser, self).__init__(elements_path=elements_path)
+        self.set_auction(auction)
+
+    def log_details(self, details: Dict[str, Any], level: int = 0):
+        for key, value in details.items():
+            if value['loaded_all']:
+                logger.success('\t' * level + f'{key} is fully loaded')
+            else:
+                if value['loaded']:
+                    logger.warning('\t' * level + f'{key} is not fully loaded')
+                    self.log_details(value['details'], level + 1)
+                else:
+                    logger.error('\t' * level + f'{key} is not loaded')
+
+    def element_check(self, soup, element):
+        soup_ = soup.find(*element['attrs'])
+        loaded = soup_ is not None
+        loaded_all = loaded
+        details = {}
+        if loaded:
+            for element_name, element_ in element['children'].items():
+                loaded_, loaded_all_, details_ = self.element_check(soup_, element_)
+                details[element_name] = {
+                    'loaded': loaded_,
+                    'loaded_all': loaded_all_,
+                    'details': details_,
+                }
+                loaded_all = loaded_all and loaded_all_
+
+        return loaded, loaded_all, details
+
+    def soup_check(self, elements: Optional[List[str]] = None) -> Any:
+        if elements is None:
+            elements = {}
+        else:
+            assert set(elements).issubset(set(self.elements.keys()))
+            elements = {key: self.elements[key] for key in elements}
+
+        details = {}
+        loaded_all = True
+
+        for key, element in elements.items():
+            loaded, loaded_all_, details_ = self.element_check(self.soup, element)
+            loaded_all = loaded_all and loaded_all_
+            details[key] = {
+                'loaded': loaded,
+                'loaded_all': loaded_all_,
+                'details': details_,
+            }
+
+        return loaded_all, details
+
+    def load_page(self, url: str, max_time: float = 5, elements: Optional[List[str]] = None) -> Any:
+        logger.info(f'Processing url: {url}')
+        self.driver.get(url)
+        start_time = datetime.now()
+        loaded_all = False
+        details = {}
+        while not loaded_all and (datetime.now() - start_time).total_seconds() < max_time:
+            self.get_soup()
+            loaded_all, details = self.soup_check(elements)
+
+        with open('test.html', 'w', encoding='utf-8') as f:
+            f.write(self.driver.page_source)
+        if loaded_all:
+            logger.success('Successfully loaded page')
+        else:
+            self.log_details(details)
+
+        return loaded_all, details
+
+    def parse_element_(self, name: str, element: Dict[str, Any], soups: List[BeautifulSoup])\
+            -> Dict[str, Any]:
+        results = {}
+        soups_ = []
+        for soup in soups:
+            if element['find_all']:
+                if element['element_num'] is None:
+                    soups_.extend(soup.find_all(*element['attrs']))
+                else:
+                    soups_.append(soup.find_all(*element['attrs'])[element['element_num']])
+            else:
+                soups_.append(soup.find(*element['attrs']))
+        if element['children']:
+            for name_, element_ in element['children'].items():
+                results.update(self.parse_element_(name_, element_, soups_))
+        if element['desired_attr'] is not None:
+            if element['desired_attr'] == 'text':
+                results[name] = [soup.text for soup in soups_]
+            else:
+                results[name] = [soup[element['desired_attr']] for soup in soups_]
+
+        return results
+
+    def parse_element(self, name: str) -> Dict[str, Any]:
+        return self.parse_element_(name, self.elements[name], [self.soup])
