@@ -262,16 +262,16 @@ class AutoParser(Parser):
         soups_ = []
         for soup in soups:
             if 'find_all' in element and element['find_all']:
-                if element['element_num'] is None:
+                if 'element_num' not in element or element['element_num'] is None:
                     soups_.extend(soup.find_all(*element['attrs']))
                 else:
                     soups_.append(soup.find_all(*element['attrs'])[element['element_num']])
             else:
                 soups_.append(soup.find(*element['attrs']))
-        if element['children']:
+        if 'children' in element and element['children']:
             for name_, element_ in element['children'].items():
                 results.update(self.parse_element_(name_, element_, soups_))
-        if element['desired_attr'] is not None:
+        if 'desired_attr' in element and element['desired_attr'] is not None:
             if element['desired_attr'] == 'text':
                 results[name] = [soup.text for soup in soups_]
             else:

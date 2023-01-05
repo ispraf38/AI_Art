@@ -4,9 +4,6 @@
             "attrs": [
                 "body"
             ],
-            "desired_attr": null,
-            "find_all": false,
-            "element_num": null,
             "children": {
                 "page": {
                     "attrs": [
@@ -15,18 +12,13 @@
                             "class": "chr-page-pagination__list"
                         }
                     ],
-                    "desired_attr": null,
-                    "find_all": false,
-                    "element_num": null,
                     "children": {
                         "page_button": {
                             "attrs": [
                                 "li",
                                 {}
                             ],
-                            "desired_attr": null,
                             "find_all": true,
-                            "element_num": null,
                             "children": {
                                 "page_text": {
                                     "attrs": [
@@ -35,10 +27,7 @@
                                             "class": "chr-button__text"
                                         }
                                     ],
-                                    "desired_attr": "text",
-                                    "find_all": false,
-                                    "element_num": null,
-                                    "children": {}
+                                    "desired_attr": "text"
                                 }
                             }
                         }
@@ -51,9 +40,6 @@
                             "class": "chr-search-lots-view__column-transition col-12 col-lm-8 col-lg-9 col-xl-9"
                         }
                     ],
-                    "desired_attr": null,
-                    "find_all": false,
-                    "element_num": null,
                     "children": {
                         "lot_box": {
                             "attrs": [
@@ -62,9 +48,7 @@
                                     "class": "chr-search-lots-view__column-transition chr-search-lots-view__tile-section col-sm-6 col-md-4 chr-search-results tile-gutter col-lm-6 col-lg-4 col-xl-4"
                                 }
                             ],
-                            "desired_attr": null,
                             "find_all": true,
-                            "element_num": null,
                             "children": {
                                 "lot_link": {
                                     "attrs": [
@@ -73,10 +57,7 @@
                                             "class": "chr-lot-tile__link"
                                         }
                                     ],
-                                    "desired_attr": "href",
-                                    "find_all": false,
-                                    "element_num": null,
-                                    "children": {}
+                                    "desired_attr": "href"
                                 }
                             }
                         }
@@ -89,9 +70,6 @@
                             "class": "chr-scrolling-carousel__content"
                         }
                     ],
-                    "desired_attr": null,
-                    "find_all": false,
-                    "element_num": null,
                     "children": {
                         "results_button": {
                             "attrs": [
@@ -100,9 +78,6 @@
                                     "title": "Sold Lots"
                                 }
                             ],
-                            "desired_attr": null,
-                            "find_all": false,
-                            "element_num": null,
                             "children": {
                                 "results_num": {
                                     "attrs": [
@@ -111,8 +86,7 @@
                                     ],
                                     "desired_attr": "text",
                                     "find_all": true,
-                                    "element_num": -1,
-                                    "children": {}
+                                    "element_num": -1
                                 }
                             }
                         }
@@ -124,9 +98,6 @@
             "attrs": [
                 "body"
             ],
-            "desired_attr": null,
-            "find_all": false,
-            "element_num": null,
             "children": {
                 "name_price": {
                     "attrs": [
@@ -135,9 +106,6 @@
                             "class": "chr-lot-header--full chr-theme--living-color"
                         }
                     ],
-                    "desired_attr": null,
-                    "find_all": false,
-                    "element_num": null,
                     "children": {
                         "image": {
                             "attrs": [
@@ -146,10 +114,7 @@
                                     "class": "chr-img lazyloaded"
                                 }
                             ],
-                            "desired_attr": "src",
-                            "find_all": false,
-                            "element_num": null,
-                            "children": {}
+                            "desired_attr": "src"
                         },
                         "header": {
                             "attrs": [
@@ -158,9 +123,6 @@
                                     "class": "chr-lot-header__information"
                                 }
                             ],
-                            "desired_attr": null,
-                            "find_all": false,
-                            "element_num": null,
                             "children": {
                                 "artist": {
                                     "attrs": [
@@ -169,10 +131,7 @@
                                             "class": "chr-lot-header__artist-name"
                                         }
                                     ],
-                                    "desired_attr": "text",
-                                    "find_all": false,
-                                    "element_num": null,
-                                    "children": {}
+                                    "desired_attr": "text"
                                 },
                                 "title": {
                                     "attrs": [
@@ -181,10 +140,7 @@
                                             "class": "chr-lot-header__title"
                                         }
                                     ],
-                                    "desired_attr": "text",
-                                    "find_all": false,
-                                    "element_num": null,
-                                    "children": {}
+                                    "desired_attr": "text"
                                 },
                                 "bid_details": {
                                     "attrs": [
@@ -193,9 +149,6 @@
                                             "class": "chr-lot-header__bid-details"
                                         }
                                     ],
-                                    "desired_attr": null,
-                                    "find_all": false,
-                                    "element_num": null,
                                     "children": {
                                         "realised": {
                                             "attrs": [
@@ -204,10 +157,7 @@
                                                     "class": "chr-lot-header__value-field"
                                                 }
                                             ],
-                                            "desired_attr": "text",
-                                            "find_all": false,
-                                            "element_num": null,
-                                            "children": {}
+                                            "desired_attr": "text"
                                         },
                                         "estimate": {
                                             "attrs": [
@@ -216,10 +166,7 @@
                                                     "class": "chr-body-medium"
                                                 }
                                             ],
-                                            "desired_attr": "text",
-                                            "find_all": false,
-                                            "element_num": null,
-                                            "children": {}
+                                            "desired_attr": "text"
                                         }
                                     }
                                 },
@@ -230,9 +177,6 @@
                                             "class": "chr-lot-header__timer mt-4"
                                         }
                                     ],
-                                    "desired_attr": null,
-                                    "find_all": false,
-                                    "element_num": null,
                                     "children": {
                                         "date": {
                                             "attrs": [
@@ -241,10 +185,7 @@
                                                     "class": "chr-body-medium"
                                                 }
                                             ],
-                                            "desired_attr": "text",
-                                            "find_all": false,
-                                            "element_num": null,
-                                            "children": {}
+                                            "desired_attr": "text"
                                         }
                                     }
                                 }
@@ -259,9 +200,6 @@
                             "class": "chr-lot-detail__main"
                         }
                     ],
-                    "desired_attr": null,
-                    "find_all": false,
-                    "element_num": null,
                     "children": {
                         "accordion": {
                             "attrs": [
@@ -270,9 +208,6 @@
                                     "class": "chr-accordion"
                                 }
                             ],
-                            "desired_attr": null,
-                            "find_all": false,
-                            "element_num": null,
                             "children": {
                                 "accordion_item": {
                                     "attrs": [
@@ -281,9 +216,7 @@
                                             "class": "hydrated"
                                         }
                                     ],
-                                    "desired_attr": null,
                                     "find_all": true,
-                                    "element_num": null,
                                     "children": {
                                         "detail_header": {
                                             "attrs": [
@@ -292,10 +225,7 @@
                                                     "slot": "header"
                                                 }
                                             ],
-                                            "desired_attr": "text",
-                                            "find_all": false,
-                                            "element_num": null,
-                                            "children": {}
+                                            "desired_attr": "text"
                                         },
                                         "detail_text": {
                                             "attrs": [
@@ -304,10 +234,7 @@
                                                     "class": "chr-lot-section__accordion--text"
                                                 }
                                             ],
-                                            "desired_attr": "text",
-                                            "find_all": false,
-                                            "element_num": null,
-                                            "children": {}
+                                            "desired_attr": "text"
                                         }
                                     }
                                 }
@@ -322,9 +249,6 @@
                             "class": "chr-breadcrumb__list"
                         }
                     ],
-                    "desired_attr": null,
-                    "find_all": false,
-                    "element_num": null,
                     "children": {
                         "auction_link": {
                             "attrs": [
@@ -334,25 +258,18 @@
                                 }
                             ],
                             "desired_attr": "href",
-                            "find_all": true,
-                            "element_num": null,
-                            "children": {}
+                            "find_all": true
                         }
                     }
                 }
             }
         }
-
-
     },
     "phillips": {
         "first_stage": {
             "attrs": [
                 "body"
             ],
-            "desired_attr": null,
-            "find_all": false,
-            "element_num": null,
             "children": {
                 "page": {
                     "attrs": [
@@ -361,9 +278,6 @@
                             "class": "pager"
                         }
                     ],
-                    "desired_attr": null,
-                    "find_all": false,
-                    "element_num": null,
                     "children": {
                         "page_list": {
                             "attrs": [
@@ -372,9 +286,6 @@
                                     "class": "num"
                                 }
                             ],
-                            "desired_attr": null,
-                            "find_all": false,
-                            "element_num": null,
                             "children": {
                                 "page_button": {
                                     "attrs": [
@@ -383,8 +294,7 @@
                                     ],
                                     "desired_attr": "href",
                                     "find_all": true,
-                                    "element_num": -1,
-                                    "children": {}
+                                    "element_num": -1
                                 }
                             }
                         }
@@ -398,9 +308,6 @@
                             "id": "main-list-backbone"
                         }
                     ],
-                    "desired_attr": null,
-                    "find_all": false,
-                    "element_num": null,
                     "children": {
                         "lot_box": {
                             "attrs": [
@@ -409,9 +316,7 @@
                                     "class": "col-xs-6 col-sm-3 search-result-item"
                                 }
                             ],
-                            "desired_attr": null,
                             "find_all": true,
-                            "element_num": null,
                             "children": {
                                 "lot_link": {
                                     "attrs": [
@@ -420,10 +325,7 @@
                                             "class": "image-link"
                                         }
                                     ],
-                                    "desired_attr": "href",
-                                    "find_all": false,
-                                    "element_num": null,
-                                    "children": {}
+                                    "desired_attr": "href"
                                 }
                             }
                         },
@@ -434,9 +336,7 @@
                                     "class": "col-xs-6 col-sm-3 pending search-result-item"
                                 }
                             ],
-                            "desired_attr": null,
                             "find_all": true,
-                            "element_num": null,
                             "children": {
                                 "lot_link": {
                                     "attrs": [
@@ -445,10 +345,7 @@
                                             "class": "image-link"
                                         }
                                     ],
-                                    "desired_attr": "href",
-                                    "find_all": false,
-                                    "element_num": null,
-                                    "children": {}
+                                    "desired_attr": "href"
                                 }
                             }
                         }
@@ -461,10 +358,7 @@
                             "class": "item-count-display"
                         }
                     ],
-                    "desired_attr": "text",
-                    "find_all": false,
-                    "element_num": null,
-                    "children": {}
+                    "desired_attr": "text"
                 }
             }
         },
@@ -472,9 +366,6 @@
             "attrs": [
                 "body"
             ],
-            "desired_attr": null,
-            "find_all": false,
-            "element_num": null,
             "children": {
                 "name_price": {
                     "attrs": [
@@ -483,9 +374,6 @@
                             "class": "lot-page__lot"
                         }
                     ],
-                    "desired_attr": null,
-                    "find_all": false,
-                    "element_num": null,
                     "children": {
                         "maker": {
                             "attrs": [
@@ -494,9 +382,6 @@
                                     "class": "lot-page__lot__maker"
                                 }
                             ],
-                            "desired_attr": null,
-                            "find_all": false,
-                            "element_num": null,
                             "children": {
                                 "artist": {
                                     "attrs": [
@@ -505,10 +390,7 @@
                                             "class": "lot-page__lot__maker__name"
                                         }
                                     ],
-                                    "desired_attr": "text",
-                                    "find_all": false,
-                                    "element_num": null,
-                                    "children": {}
+                                    "desired_attr": "text"
                                 }
                             }
                         },
@@ -519,10 +401,7 @@
                                     "class": "lot-page__lot__title"
                                 }
                             ],
-                            "desired_attr": "text",
-                            "find_all": false,
-                            "element_num": null,
-                            "children": {}
+                            "desired_attr": "text"
                         },
                         "details": {
                             "attrs": [
@@ -531,10 +410,7 @@
                                     "class": "lot-page__lot__additional-info"
                                 }
                             ],
-                            "desired_attr": "text",
-                            "find_all": false,
-                            "element_num": null,
-                            "children": {}
+                            "desired_attr": "text"
                         },
                         "estimate": {
                             "attrs": [
@@ -543,10 +419,7 @@
                                     "class": "lot-page__lot__estimate"
                                 }
                             ],
-                            "desired_attr": "text",
-                            "find_all": false,
-                            "element_num": null,
-                            "children": {}
+                            "desired_attr": "text"
                         },
                         "realised": {
                             "attrs": [
@@ -555,10 +428,7 @@
                                     "class": "lot-page__lot__sold"
                                 }
                             ],
-                            "desired_attr": "text",
-                            "find_all": false,
-                            "element_num": null,
-                            "children": {}
+                            "desired_attr": "text"
                         }
                     }
                 },
@@ -569,10 +439,7 @@
                             "class": "phillips-image__image"
                         }
                     ],
-                    "desired_attr": "src",
-                    "find_all": false,
-                    "element_num": null,
-                    "children": {}
+                    "desired_attr": "src"
                 },
                 "auction_link": {
                     "attrs": [
@@ -581,10 +448,7 @@
                             "class": "sale-title-banner__link"
                         }
                     ],
-                    "desired_attr": "href",
-                    "find_all": false,
-                    "element_num": null,
-                    "children": {}
+                    "desired_attr": "href"
                 }
             }
         }
