@@ -204,7 +204,7 @@ class AutoParser(Parser):
         loaded = soup_ is not None
         loaded_all = loaded
         details = {}
-        if loaded:
+        if loaded and 'children' in element:
             for element_name, element_ in element['children'].items():
                 loaded_, loaded_all_, details_ = self.element_check(soup_, element_)
                 details[element_name] = {
@@ -261,7 +261,7 @@ class AutoParser(Parser):
         results = {}
         soups_ = []
         for soup in soups:
-            if element['find_all']:
+            if 'find_all' in element and element['find_all']:
                 if element['element_num'] is None:
                     soups_.extend(soup.find_all(*element['attrs']))
                 else:

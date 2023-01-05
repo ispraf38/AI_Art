@@ -5,37 +5,30 @@ import os
 
 from SecondStage.data_handler import get_data
 
-MAX_LOTS_ON_PAGE = {
-    'christies': 20,
-    'phillips': 120,
-}
-
 FILE_NAME = '..\\Data\\data'
 FILE_KWARGS = {
-    'sep': '@'
+    # 'sep': '@'
 }
+SEPARATOR = '@'
 
 
 def get_details(row: pd.Series, parser: AutoParser) -> pd.Series:
     url = row['links']
-    if parser.auction == 'christies':
-        elements = ['name_price', 'description', 'breadcrumb']
-    elif parser.auction == 'phillips':
-        elements = ['name_price', 'image', 'auction_link']
-    else:
-        logger.warning(f'Unknown auction: {parser.auction}')
-        elements = []
+    elements = ['second_stage']
     loaded_all, loaded = parser.load_page(url, elements=elements)
     if loaded_all:
         results = {}
         for element in elements:
             results.update(parser.parse_element(element))
         for key, value in results.items():
-            if 'sep' in FILE_KWARGS:
-                if FILE_KWARGS['sep'] in value[0]:
-                    logger.error(f'Separator ({FILE_KWARGS["sep"]}) was found in value:\n {value[0]}')
+            for v in value:
+                if 'sep' in FILE_KWARGS and FILE_KWARGS['sep'] in v:
+                    logger.error(f'Separator ({FILE_KWARGS["sep"]}) was found in value:\n {v}')
                     raise NameError('Separator was found in value')
-            row[key] = value[0]
+                if SEPARATOR in v:
+                    logger.error(f'Separator ({SEPARATOR}) was found in value:\n {v}')
+                    raise NameError('Separator was found in value')
+            row[key] = SEPARATOR.join(value)
 
     return row
 
@@ -43,12 +36,12 @@ def get_details(row: pd.Series, parser: AutoParser) -> pd.Series:
 def run(parser: AutoParser):
     data = get_data(f'{FILE_NAME}_{parser.auction}.csv', FILE_KWARGS)
     # data = data.loc[data['name'] == 'Pablo Picasso']
-    # data = data.loc[data['name'] == 'Adolf von Menzel']
-    data = data.loc[data['name'] == 'Joan Mitchell']
+    data = data.loc[data['name'] == 'Adolf von Menzel']
+    # data = data.loc[data['name'] == 'Joan Mitchell']
 
     data = data.apply(lambda x: get_details(x, parser), axis=1).reset_index(drop=True)
 
-    data.to_csv(f'{FILE_NAME}_{parser.auction}_students_test_.csv', sep=FILE_KWARGS['sep'])
+    data.to_csv(f'{FILE_NAME}_{parser.auction}_students_test_.csv', **FILE_KWARGS)
 
 
 if __name__ == '__main__':
