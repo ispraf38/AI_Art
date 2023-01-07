@@ -256,8 +256,12 @@ class AutoParser(Parser):
 
         return loaded_all, details
 
-    def parse_element_(self, name: str, element: Dict[str, Any], soups: List[BeautifulSoup])\
-            -> Dict[str, Any]:
+    def parse_element_(self,
+                       name: str,
+                       element: Dict[str, Any],
+                       soups: List[BeautifulSoup],
+                       loaded: Optional[Dict[str, Any]] = None,
+                       ) -> Dict[str, Any]:
         results = {}
         soups_ = []
         for soup in soups:
@@ -270,7 +274,10 @@ class AutoParser(Parser):
                 soups_.append(soup.find(*element['attrs']))
         if 'children' in element and element['children']:
             for name_, element_ in element['children'].items():
-                results.update(self.parse_element_(name_, element_, soups_))
+                if loaded is None:
+                    results.update(self.parse_element_(name_, element_, soups_))
+                elif loaded[name_]['loaded']:
+                    results.update(self.parse_element_(name_, element_, soups_, loaded[name_]['details']))
         if 'desired_attr' in element and element['desired_attr'] is not None:
             if element['desired_attr'] == 'text':
                 results[name] = [soup.text for soup in soups_]
@@ -279,5 +286,5 @@ class AutoParser(Parser):
 
         return results
 
-    def parse_element(self, name: str) -> Dict[str, Any]:
-        return self.parse_element_(name, self.elements[name], [self.soup])
+    def parse_element(self, name: str, loaded: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        return self.parse_element_(name, self.elements[name], [self.soup], loaded)

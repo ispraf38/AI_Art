@@ -9,17 +9,16 @@ FILE_NAME = '..\\Data\\data'
 FILE_KWARGS = {
     # 'sep': '@'
 }
-SEPARATOR = '@'
+SEPARATOR = '_@_'
 
 
-def get_details(row: pd.Series, parser: AutoParser) -> pd.Series:
+def get_details(row: pd.Series, parser: AutoParser, forced: bool = True) -> pd.Series:
     url = row['links']
     elements = ['second_stage']
-    loaded_all, loaded = parser.load_page(url, elements=elements)
-    if loaded_all:
-        results = {}
-        for element in elements:
-            results.update(parser.parse_element(element))
+    stage = 'second_stage'
+    loaded_all, loaded = parser.load_page(url, elements=[stage])
+    if loaded_all or (forced and loaded[stage]['loaded']):
+        results = parser.parse_element(stage, loaded[stage]['details'])
         for key, value in results.items():
             for v in value:
                 if 'sep' in FILE_KWARGS and FILE_KWARGS['sep'] in v:
@@ -36,8 +35,9 @@ def get_details(row: pd.Series, parser: AutoParser) -> pd.Series:
 def run(parser: AutoParser):
     data = get_data(f'{FILE_NAME}_{parser.auction}.csv', FILE_KWARGS)
     # data = data.loc[data['name'] == 'Pablo Picasso']
-    data = data.loc[data['name'] == 'Adolf von Menzel']
+    # data = data.loc[data['name'] == 'Adolf von Menzel']
     # data = data.loc[data['name'] == 'Joan Mitchell']
+    data = data.loc[[i for i in range(0, len(data), 1000)]]
 
     data = data.apply(lambda x: get_details(x, parser), axis=1).reset_index(drop=True)
 
@@ -45,8 +45,8 @@ def run(parser: AutoParser):
 
 
 if __name__ == '__main__':
-    parser = AutoParser('christies')
-    # parser = AutoParser('phillips')
+    # parser = AutoParser('christies')
+    parser = AutoParser('phillips')
     run(parser)
     parser.driver.close()
 

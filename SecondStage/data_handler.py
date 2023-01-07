@@ -11,8 +11,6 @@ def get_data(file_name: str,
     if file_kwargs is None:
         file_kwargs = {}
 
-    names = ['image', 'artist', 'title', 'realised', 'estimate', 'date', 'auction_link', 'detail_header', 'detail_text']
-
     if tmp_name is not None and os.path.exists(tmp_name):
         logger.info(f'File {tmp_name} was found')
         data = pd.read_csv(tmp_name, index_col=0, **file_kwargs)
@@ -22,15 +20,11 @@ def get_data(file_name: str,
         data = data.loc[data['links'] != 'No']
         data = data.loc[~data['links'].str.contains('onlineonly')]
         data = data.groupby('links').first().reset_index()
-        for name in names:
-            data[name] = "~"
     else:
         logger.error(f'File {file_name} was not found')
         data = pd.DataFrame()
         return data
 
-    for name in names:
-        data[name] = data[name].str.strip("[]'").str.split("', '")
 
     return data
 
